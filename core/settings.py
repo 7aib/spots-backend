@@ -25,7 +25,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 SECRET_KEY = 'django-insecure-k7i1%hw)@9-^+5e&(@@s^r6p7o+$5oc67vsv!zn#vqp38zc*x9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.8', 'localhost']
 
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'places',
-    'social',
+    'social.apps.SocialConfig',
 ]
 
 MIDDLEWARE = [
