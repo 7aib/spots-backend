@@ -22,7 +22,8 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
-    path('api/places/', include('places.urls')),
+    path('api/feed/', include('feed.urls')),
+    path('api/social/', include('social.urls')),
 
 ]
 

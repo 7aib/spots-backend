@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('places', '0002_userprofile_age_group'),
+        ('feed', '0002_userprofile_age_group'),
     ]
 
     operations = [
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('title', models.CharField(blank=True, max_length=255, null=True)),
                 ('file', models.FileField(upload_to='videos/')),
-                ('place', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='places.place')),
+                ('place', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='feed.place')),
             ],
             options={
                 'abstract': False,

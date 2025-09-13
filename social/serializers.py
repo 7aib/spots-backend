@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from .models import Like, Comment, Share, Follow, Activity
-from places.models import Video, Place, UserProfile
+from feed.models import Video, Place, UserProfile
 
 
 class UserBasicSerializer(serializers.ModelSerializer):

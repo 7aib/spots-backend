@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from .models import Activity
 from .enums import ActivityType
-from places.models import Video, Place
+from feed.models import Video, Place
 
 
 @receiver(post_save, sender=Video)

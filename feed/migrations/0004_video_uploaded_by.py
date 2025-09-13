@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('places', '0003_video'),
+        ('feed', '0003_video'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
