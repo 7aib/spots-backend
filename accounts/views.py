@@ -88,7 +88,7 @@ class PasswordResetRequestView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             
             # Create reset URL (you'll need to configure this based on your frontend)
-            reset_url = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+            reset_url = f"{settings.FRONTEND_URL}/api/auth/reset-password-confirm/{uid}/{token}/"
             
             # Send email
             subject = 'Password Reset Request'
