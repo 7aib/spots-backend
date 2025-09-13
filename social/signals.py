@@ -5,12 +5,12 @@ from django.contrib.contenttypes.models import ContentType
 
 from .models import Activity
 from .enums import ActivityType
-from feed.models import Video, Place
+from feed.models import Video, Place, Media
 
 
 @receiver(post_save, sender=Video)
 def create_video_upload_activity(sender, instance, created, **kwargs):
-    """Create activity when a video is uploaded"""
+    """Create activity when a video is uploaded (legacy)"""
     if created:
         # Create activity for the user who uploaded the video
         # This could be used to show in their own activity feed or for followers
@@ -18,6 +18,19 @@ def create_video_upload_activity(sender, instance, created, **kwargs):
             actor=instance.uploaded_by,
             target_user=instance.uploaded_by,  # User sees their own upload
             activity_type=ActivityType.VIDEO_UPLOAD,
+            content_object=instance
+        )
+
+
+@receiver(post_save, sender=Media)
+def create_media_upload_activity(sender, instance, created, **kwargs):
+    """Create activity when media (photo/video) is uploaded"""
+    if created:
+        # Create activity for the user who uploaded the media
+        Activity.create_activity(
+            actor=instance.uploaded_by,
+            target_user=instance.uploaded_by,  # User sees their own upload
+            activity_type=ActivityType.VIDEO_UPLOAD,  # Using same type for now
             content_object=instance
         )
 
