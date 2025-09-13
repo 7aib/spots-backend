@@ -5,16 +5,13 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .models import Video, UserProfile, Media, Place
+from .models import UserProfile, Media, Place
 from .serializers import (
-    VideoFeedSerializer, UserProfileSerializer, MediaUploadSerializer, 
+    UserProfileSerializer, MediaUploadSerializer, 
     MediaFeedSerializer, UserMediaSerializer, PlaceSerializer
 )
 
-class VideoFeedView(generics.ListAPIView):
-    queryset = Video.objects.all().order_by("-created_at")  # latest first
-    serializer_class = VideoFeedSerializer
-    permission_classes = [permissions.AllowAny]  # public feed
+# Legacy VideoFeedView removed - use MediaFeedView instead
 
 class UserProfileView(generics.RetrieveAPIView):
     """View to get user profile with all uploaded media and metadata"""

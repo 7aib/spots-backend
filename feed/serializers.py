@@ -1,53 +1,38 @@
 from rest_framework import serializers
-from .models import Video, UserProfile, City, Media, Place
+from .models import UserProfile, City, Media, Place
 from django.contrib.auth.models import User
 
-class VideoFeedSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
-    uploaded_by = serializers.StringRelatedField()  # shows username instead of ID
-    place_name = serializers.CharField(source="place.name", read_only=True)
-
-    class Meta:
-        model = Video
-        fields = [
-            "id",
-            "title",
-            "url",
-            "uploaded_by",
-            "place_name",
-            "created_at",
-        ]
-
-    def get_url(self, obj):
-        request = self.context.get("request")
-        return request.build_absolute_uri(obj.file.url)
+# Legacy VideoFeedSerializer removed - use MediaFeedSerializer instead
 
 class UserMediaSerializer(serializers.ModelSerializer):
-    """Serializer for user's uploaded media with metadata"""
+    """Serializer for user's own media in profile"""
     url = serializers.SerializerMethodField()
+    thumbnail_url = serializers.SerializerMethodField()
     like_count = serializers.ReadOnlyField()
     comment_count = serializers.ReadOnlyField()
     share_count = serializers.ReadOnlyField()
+    file_size_mb = serializers.ReadOnlyField()
     place_name = serializers.CharField(source="place.name", read_only=True)
     place_city = serializers.CharField(source="place.city.name", read_only=True)
 
     class Meta:
-        model = Video
+        model = Media
         fields = [
-            "id",
-            "title",
-            "url",
-            "place_name",
-            "place_city",
-            "like_count",
-            "comment_count",
-            "share_count",
-            "created_at",
+            "id", "title", "description", "url", "thumbnail_url",
+            "media_type", "place_name", "place_city", "is_public",
+            "like_count", "comment_count", "share_count", 
+            "file_size_mb", "created_at"
         ]
 
     def get_url(self, obj):
         request = self.context.get("request")
         return request.build_absolute_uri(obj.file.url)
+    
+    def get_thumbnail_url(self, obj):
+        if obj.thumbnail:
+            request = self.context.get("request")
+            return request.build_absolute_uri(obj.thumbnail.url)
+        return None
 
 class CitySerializer(serializers.ModelSerializer):
     """Serializer for city information"""
@@ -242,37 +227,6 @@ class MediaFeedSerializer(serializers.ModelSerializer):
             return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
         else:
             return "Just now"
-
-
-class UserMediaSerializer(serializers.ModelSerializer):
-    """Serializer for user's own media in profile"""
-    url = serializers.SerializerMethodField()
-    thumbnail_url = serializers.SerializerMethodField()
-    like_count = serializers.ReadOnlyField()
-    comment_count = serializers.ReadOnlyField()
-    share_count = serializers.ReadOnlyField()
-    file_size_mb = serializers.ReadOnlyField()
-    place_name = serializers.CharField(source="place.name", read_only=True)
-    place_city = serializers.CharField(source="place.city.name", read_only=True)
-
-    class Meta:
-        model = Media
-        fields = [
-            "id", "title", "description", "url", "thumbnail_url",
-            "media_type", "place_name", "place_city", "is_public",
-            "like_count", "comment_count", "share_count", 
-            "file_size_mb", "created_at"
-        ]
-
-    def get_url(self, obj):
-        request = self.context.get("request")
-        return request.build_absolute_uri(obj.file.url)
-    
-    def get_thumbnail_url(self, obj):
-        if obj.thumbnail:
-            request = self.context.get("request")
-            return request.build_absolute_uri(obj.thumbnail.url)
-        return None
 
 
 class PlaceSerializer(serializers.ModelSerializer):

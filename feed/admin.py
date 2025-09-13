@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, City, Category, Place, Video
+from .models import UserProfile, City, Category, Place, Media
 
 # 🧍 User Profile
 @admin.register(UserProfile)
@@ -38,9 +38,10 @@ class PlaceAdmin(admin.ModelAdmin):
         return obj.shares.count()
     shares_count.short_description = "Shares"
 
-# 📸 Video
-@admin.register(Video)
-class VideoAdmin(admin.ModelAdmin):
-    list_display = ("title", "place", "created_at")
-    search_fields = ("title",)
-    list_filter = ("place",)
+# 📸 Media
+@admin.register(Media)
+class MediaAdmin(admin.ModelAdmin):
+    list_display = ("title", "media_type", "uploaded_by", "place", "is_public", "created_at")
+    list_filter = ("media_type", "is_public", "created_at", "uploaded_by")
+    search_fields = ("title", "uploaded_by__username", "description")
+    readonly_fields = ("file_size_mb",)

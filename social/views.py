@@ -10,7 +10,7 @@ from datetime import timedelta
 from .models import Activity, Follow, Like, Comment, Share
 from .serializers import ActivitySerializer, FollowSerializer, ActivityStatsSerializer
 from .enums import ActivityType
-from feed.models import Video, Place
+from feed.models import Place
 
 
 class ActivityFeedView(generics.ListAPIView):
