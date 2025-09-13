@@ -5,13 +5,30 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.db.models import Q
+
+from feed.enums import MEDIA_TYPES
 from .models import UserProfile, Media, Place
 from .serializers import (
     UserProfileSerializer, MediaUploadSerializer, 
     MediaFeedSerializer, UserMediaSerializer, PlaceSerializer
 )
 
-# Legacy VideoFeedView removed - use MediaFeedView instead
+class Feed(APIView):
+    """Media feed view for all public videos """
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request):
+        """Get public media feed"""
+        
+        queryset = Media.objects.filter(media_type=MEDIA_TYPES.VIDEO, is_public=True, is_deleted=False)
+        
+        queryset = queryset.select_related('uploaded_by', 'place', 'place__city').order_by('-created_at')
+        serializer = MediaFeedSerializer(queryset, many=True, context={'request': request})
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 
 class UserProfileView(generics.RetrieveAPIView):
     """View to get user profile with all uploaded media and metadata"""
@@ -34,11 +51,6 @@ class UserProfileByIDView(generics.RetrieveAPIView):
         user = get_object_or_404(User, id=user_id)
         profile, created = UserProfile.objects.get_or_create(user=user)
         return profile
-
-
-# -----------------------------
-# 📸 Media Upload & Feed Views
-# -----------------------------
 
 class MediaUploadView(APIView):
     """View for uploading photos and videos"""

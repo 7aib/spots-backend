@@ -2,20 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 from core.mixins import TimeStampedMixin, SoftDeleteMixin
 from django.contrib.contenttypes.fields import GenericRelation
+from core.settings import MEDIA_URL
 
 from feed.enums import MEDIA_TYPES
 from .choices import Provinces, AgeGroup
 from social.models import Like, Comment, Share
-
-# -----------------------------
-# 🧍 User Profile
-# -----------------------------
 
 class UserProfile(TimeStampedMixin, SoftDeleteMixin, models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
     bio = models.CharField(max_length=300, blank=True)
     city = models.ForeignKey('City', on_delete=models.SET_NULL, null=True, blank=True)
+    is_public = models.BooleanField(default=True, help_text="Whether this profile is visible to other users")
     age_group = models.CharField(
         max_length=10,
         choices=AgeGroup.choices,
@@ -42,11 +40,6 @@ class UserProfile(TimeStampedMixin, SoftDeleteMixin, models.Model):
     def __str__(self):
         return self.user.username
 
-
-# -----------------------------
-# 🏙️ City
-# -----------------------------
-
 class City(TimeStampedMixin, SoftDeleteMixin, models.Model):
     name = models.CharField(max_length=100, unique=True)
     province = models.CharField(max_length=100, choices=Provinces, default='punjab')
@@ -54,19 +47,11 @@ class City(TimeStampedMixin, SoftDeleteMixin, models.Model):
     def __str__(self):
         return self.name
 
-# -----------------------------
-# 🗂️ Category
-# -----------------------------
-
 class Category(TimeStampedMixin, SoftDeleteMixin, models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-
-# -----------------------------
-# 📍 Place
-# -----------------------------
 
 class Place(TimeStampedMixin, SoftDeleteMixin, models.Model):
     name = models.CharField(max_length=255)
@@ -95,17 +80,13 @@ class Place(TimeStampedMixin, SoftDeleteMixin, models.Model):
     def __str__(self):
         return self.name
 
-# -----------------------------
-# 📸 Media (Photos & Videos)
-# -----------------------------
-
 class Media(TimeStampedMixin, SoftDeleteMixin, models.Model):
     """Unified model for both photos and videos"""
     
     
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, help_text="Optional description for the media")
-    file = models.FileField(upload_to="media/")
+    file = models.FileField(upload_to=MEDIA_URL)
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES.choices)
     thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True, help_text="Auto-generated thumbnail for videos")
     place = models.ForeignKey(Place, on_delete=models.SET_NULL, null=True, blank=True)
