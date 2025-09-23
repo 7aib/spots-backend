@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('feed', '0005_media_delete_video_and_more'),
+        ("feed", "0005_media_delete_video_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='is_public',
-            field=models.BooleanField(default=True, help_text='Whether this profile is visible to other users'),
+            model_name="userprofile",
+            name="is_public",
+            field=models.BooleanField(
+                default=True, help_text="Whether this profile is visible to other users"
+            ),
         ),
     ]

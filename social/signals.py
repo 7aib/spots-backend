@@ -1,11 +1,12 @@
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 
-from .models import Activity
+from feed.models import Media, Place
+
 from .enums import ActivityType
-from feed.models import Place, Media
+from .models import Activity
 
 
 @receiver(post_save, sender=Media)
@@ -17,7 +18,7 @@ def create_media_upload_activity(sender, instance, created, **kwargs):
             actor=instance.uploaded_by,
             target_user=instance.uploaded_by,  # User sees their own upload
             activity_type=ActivityType.VIDEO_UPLOAD,  # Using same type for now
-            content_object=instance
+            content_object=instance,
         )
 
 
@@ -30,5 +31,5 @@ def create_place_created_activity(sender, instance, created, **kwargs):
             actor=instance.created_by,
             target_user=instance.created_by,  # User sees their own creation
             activity_type=ActivityType.PLACE_CREATED,
-            content_object=instance
+            content_object=instance,
         )
