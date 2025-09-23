@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class ActivityType(models.TextChoices):
     FOLLOW = "follow", "Follow"
     LIKE = "like", "Like"
@@ -7,6 +8,7 @@ class ActivityType(models.TextChoices):
     SHARE = "share", "Share"
     VIDEO_UPLOAD = "video_upload", "Video Upload"
     PLACE_CREATED = "place_created", "Place Created"
+
 
 class SharePlatform(models.TextChoices):
     FACEBOOK = "facebook", "Facebook"

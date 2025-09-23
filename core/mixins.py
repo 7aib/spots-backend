@@ -1,12 +1,8 @@
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 
-
-# -----------------------------
-# 🔁 Mixins
-# -----------------------------
 
 class TimeStampedMixin(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
@@ -30,6 +26,7 @@ class SoftDeleteMixin(models.Model):
 
     class Meta:
         abstract = True
+
 
 class GenericRelationBaseMixin(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
