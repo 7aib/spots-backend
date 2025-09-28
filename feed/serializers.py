@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from .models import City, Media, Place, UserProfile
+from accounts.models import UserProfile
+from .models import City, Media, Place
 
 # Legacy VideoFeedSerializer removed - use MediaFeedSerializer instead
 

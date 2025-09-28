@@ -1,14 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, City, Media, Place, UserProfile
-
-
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "city", "age_group")
-    search_fields = ("user__username", "city__name")
-    list_filter = ("age_group", "city")
-
+from .models import Category, City, Media, Place
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):

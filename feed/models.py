@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+import core.settings as settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
@@ -7,39 +7,7 @@ from core.settings import MEDIA_URL
 from feed.enums import MEDIA_TYPES
 from social.models import Comment, Like, Share
 
-from .choices import AgeGroup, Provinces
-
-
-class UserProfile(TimeStampedMixin, SoftDeleteMixin, models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    profile_picture = models.ImageField(upload_to="profiles/", blank=True, null=True)
-    bio = models.CharField(max_length=300, blank=True)
-    city = models.ForeignKey("City", on_delete=models.SET_NULL, null=True, blank=True)
-    is_public = models.BooleanField(
-        default=True, help_text="Whether this profile is visible to other users"
-    )
-    age_group = models.CharField(
-        max_length=10, choices=AgeGroup.choices, blank=True, null=True
-    )
-    likes = GenericRelation(Like)
-    comments = GenericRelation(Comment)
-    shares = GenericRelation(Share)
-
-    @property
-    def like_count(self):
-        return self.likes.count()
-
-    @property
-    def comment_count(self):
-        return self.comments.count()
-
-    @property
-    def share_count(self):
-        return self.shares.count()
-
-    def __str__(self):
-        return self.user.username
-
+from .choices import Provinces
 
 class City(TimeStampedMixin, SoftDeleteMixin, models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -65,7 +33,7 @@ class Place(TimeStampedMixin, SoftDeleteMixin, models.Model):
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     likes = GenericRelation(Like)
     comments = GenericRelation(Comment)
     shares = GenericRelation(Share)
@@ -103,7 +71,7 @@ class Media(TimeStampedMixin, SoftDeleteMixin, models.Model):
     )
     place = models.ForeignKey(Place, on_delete=models.SET_NULL, null=True, blank=True)
     uploaded_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="uploaded_media"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="uploaded_media"
     )
     is_public = models.BooleanField(
         default=True, help_text="Whether this media is visible to other users"
