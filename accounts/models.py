@@ -15,6 +15,7 @@ class UserProfile(TimeStampedMixin, SoftDeleteMixin, AbstractUser):
     is_public = models.BooleanField(
         default=True, help_text="Whether this profile is visible to other users"
     )
+    dob = models.DateField(null=True, blank=True, help_text="Date of Birth")
     age_group = models.CharField(
         max_length=10, choices=AgeGroup.choices, blank=True, null=True
     )
