@@ -1,15 +1,14 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
-
 from core.mixins import GenericRelationBaseMixin, SoftDeleteMixin, TimeStampedMixin
 from social.enums import ActivityType, SharePlatform
 
 
 class Like(GenericRelationBaseMixin, TimeStampedMixin, models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes_given")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="likes_given")
 
     class Meta:
         unique_together = ("user", "content_type", "object_id")
@@ -19,7 +18,7 @@ class Like(GenericRelationBaseMixin, TimeStampedMixin, models.Model):
             models.Index(fields=["content_type", "object_id"]),
             models.Index(
                 fields=["user", "content_type"]
-            ),  # For user's likes on specific content types
+            ),
         ]
 
     def __str__(self):
@@ -38,7 +37,7 @@ class Comment(
     GenericRelationBaseMixin, TimeStampedMixin, SoftDeleteMixin, models.Model
 ):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comments_given"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comments_given"
     )
     text = models.TextField(max_length=500)
     parent = models.ForeignKey(
@@ -76,7 +75,7 @@ class Comment(
 
 class Share(GenericRelationBaseMixin, TimeStampedMixin, models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="shares_given"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shares_given"
     )
     platform = models.CharField(
         max_length=20, choices=SharePlatform.choices, default=SharePlatform.OTHER
@@ -109,10 +108,10 @@ class Follow(TimeStampedMixin, models.Model):
     """Model to track user following relationships"""
 
     follower = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="following"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following"
     )
     following = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="followers"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="followers"
     )
 
     class Meta:
@@ -127,11 +126,11 @@ class Activity(TimeStampedMixin, SoftDeleteMixin, models.Model):
     """Model to track all user activities for activity feed"""
 
     actor = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="activities_performed"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="activities_performed"
     )
 
     target_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="activities_received"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="activities_received"
     )
     activity_type = models.CharField(max_length=20, choices=ActivityType.choices)
 

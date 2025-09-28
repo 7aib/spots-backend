@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import logout
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -10,6 +9,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from accounts.models import UserProfile
 
 from .serializers import (
     LoginSerializer,
@@ -23,7 +24,7 @@ from .serializers import (
 class RegisterView(generics.CreateAPIView):
     """User registration endpoint"""
 
-    queryset = User.objects.all()
+    queryset = UserProfile.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -94,7 +95,7 @@ class PasswordResetRequestView(APIView):
         serializer = PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data["email"]
-            user = get_object_or_404(User, email=email)
+            user = get_object_or_404(UserProfile, email=email)
 
             # Generate reset token
             token = default_token_generator.make_token(user)
@@ -154,7 +155,7 @@ class PasswordResetConfirmView(APIView):
 
             # Decode user ID
             user_id = force_str(urlsafe_base64_decode(uid))
-            user = get_object_or_404(User, pk=user_id)
+            user = get_object_or_404(UserProfile, pk=user_id)
 
             # Set new password
             user.set_password(new_password)
