@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
-
-from feed.models import Place, UserProfile
+from accounts.models import UserProfile
+from feed.models import Place
 
 from .models import Activity, Comment, Follow, Like, Share
 

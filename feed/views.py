@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from feed.enums import MEDIA_TYPES
-
-from .models import Media, Place, UserProfile
+from accounts.models import UserProfile
+from .models import Media, Place
 from .serializers import (
     MediaFeedSerializer,
     MediaUploadSerializer,
