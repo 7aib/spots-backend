@@ -5,8 +5,8 @@ from .models import UserProfile
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'city', 'is_public', 'age_group', 'created_at')
-    list_filter = ('is_public', 'age_group', 'city', 'is_active', 'is_staff', 'created_at')
+    list_display = ('username', 'email', 'first_name', 'last_name','is_public', 'age_group', 'created_at')
+    list_filter = ('is_public', 'age_group', 'is_active', 'is_staff', 'created_at')
     search_fields = ('username', 'email', 'first_name', 'last_name', 'bio')
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
@@ -14,7 +14,7 @@ class UserProfileAdmin(admin.ModelAdmin):
             'fields': ('username', 'email', 'first_name', 'last_name')
         }),
         ('Profile Information', {
-            'fields': ('profile_picture', 'bio', 'city', 'age_group', 'is_public')
+            'fields': ('profile_picture', 'bio','age_group', 'is_public')
         }),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')

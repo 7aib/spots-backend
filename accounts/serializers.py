@@ -2,16 +2,15 @@ import secrets
 
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+
+from accounts.models import UserProfile
+from accounts.utils import get_age_group
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -19,9 +18,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
+    dob = serializers.DateField(required=False, allow_null=True)
 
     class Meta:
-        model = User
+        model = UserProfile
         fields = [
             "first_name",
             "last_name",
@@ -29,6 +29,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "email",
             "password",
             "password_confirm",
+            "dob",
         ]
 
     def validate(self, attrs):
@@ -37,23 +38,26 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
+        if UserProfile.objects.filter(username=value).exists():
             raise serializers.ValidationError("Username already exists")
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        if UserProfile.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already exists")
         return value
 
     def create(self, validated_data):
         validated_data.pop("password_confirm")
-        user = User.objects.create_user(
+        dob = validated_data.get("dob")
+        user = UserProfile.objects.create_user(
             username=validated_data["username"],
             email=validated_data.get("email"),
             password=validated_data["password"],
             first_name=validated_data.get("first_name", ""),
             last_name=validated_data.get("last_name", ""),
+            dob=dob,
+            age_group=get_age_group(self, dob=dob),
         )
         # Create token for the user
         Token.objects.create(user=user)
@@ -84,7 +88,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for user data"""
 
     class Meta:
-        model = User
+        model = UserProfile
         fields = ["id", "username", "email", "first_name", "last_name", "date_joined"]
         read_only_fields = ["id", "date_joined"]
 
@@ -94,8 +98,8 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         try:
-            User.objects.get(email=value)
-        except User.DoesNotExist:
+            UserProfile.objects.get(email=value)
+        except UserProfile.DoesNotExist:
             raise serializers.ValidationError("No user found with this email address")
         return value
 
@@ -114,16 +118,16 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def validate_uid(self, value):
         try:
             uid = force_str(urlsafe_base64_decode(value))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = UserProfile.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, UserProfile.DoesNotExist):
             raise serializers.ValidationError("Invalid reset link")
         return value
 
     def validate_token(self, value):
         try:
             uid = force_str(urlsafe_base64_decode(self.initial_data.get("uid")))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = UserProfile.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, UserProfile.DoesNotExist):
             raise serializers.ValidationError("Invalid reset link")
 
         if not default_token_generator.check_token(user, value):
