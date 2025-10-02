@@ -4,11 +4,8 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -21,6 +18,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
+    dob = serializers.DateField(required=False, allow_null=True)
 
     class Meta:
         model = UserProfile
@@ -51,14 +49,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("password_confirm")
+        dob = validated_data.get("dob")
         user = UserProfile.objects.create_user(
             username=validated_data["username"],
             email=validated_data.get("email"),
             password=validated_data["password"],
             first_name=validated_data.get("first_name", ""),
             last_name=validated_data.get("last_name", ""),
-            dob=validated_data.pop("dob", None),
-            age_group=get_age_group(self, validated_data.get('dob')),
+            dob=dob,
+            age_group=get_age_group(self, dob=dob),
         )
         # Create token for the user
         Token.objects.create(user=user)
