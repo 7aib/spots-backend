@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
 class AgeGroup(models.TextChoices):
     KID = "0-12", _("Kid (0-12)")
     TEEN = "13-19", _("Teen (13-19)")

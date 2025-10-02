@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
 class Provinces(models.TextChoices):
     PUNJAB = "punjab", _("Punjab")
     SINDH = "sindh", _("Sindh")

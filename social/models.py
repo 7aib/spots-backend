@@ -3,13 +3,16 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
+
 from accounts.models import UserProfile
 from core.mixins import GenericRelationBaseMixin, SoftDeleteMixin, TimeStampedMixin
 from social.enums import ActivityType, SharePlatform
 
 
 class Like(GenericRelationBaseMixin, TimeStampedMixin, models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="likes_given")
+    user = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE, related_name="likes_given"
+    )
 
     class Meta:
         unique_together = ("user", "content_type", "object_id")
@@ -17,9 +20,7 @@ class Like(GenericRelationBaseMixin, TimeStampedMixin, models.Model):
         indexes = [
             models.Index(fields=["user", "-created_at"]),
             models.Index(fields=["content_type", "object_id"]),
-            models.Index(
-                fields=["user", "content_type"]
-            ),
+            models.Index(fields=["user", "content_type"]),
         ]
 
     def __str__(self):

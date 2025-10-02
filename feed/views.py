@@ -6,8 +6,9 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from feed.enums import MEDIA_TYPES
 from accounts.models import UserProfile
+from feed.enums import MEDIA_TYPES
+
 from .models import Media, Place
 from .serializers import (
     MediaFeedSerializer,

@@ -1,9 +1,11 @@
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from .choices import AgeGroup
 
 from core.mixins import SoftDeleteMixin, TimeStampedMixin
+
+from .choices import AgeGroup
+
 
 class UserProfile(TimeStampedMixin, SoftDeleteMixin, AbstractUser):
     profile_picture = models.ImageField(upload_to="profiles/", blank=True, null=True)

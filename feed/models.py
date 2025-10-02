@@ -1,13 +1,14 @@
-import core.settings as settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
+import core.settings as settings
 from core.mixins import SoftDeleteMixin, TimeStampedMixin
 from core.settings import MEDIA_URL
 from feed.enums import MEDIA_TYPES
 from social.models import Comment, Like, Share
 
 from .choices import Provinces
+
 
 class City(TimeStampedMixin, SoftDeleteMixin, models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -71,7 +72,9 @@ class Media(TimeStampedMixin, SoftDeleteMixin, models.Model):
     )
     place = models.ForeignKey(Place, on_delete=models.SET_NULL, null=True, blank=True)
     uploaded_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="uploaded_media"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="uploaded_media",
     )
     is_public = models.BooleanField(
         default=True, help_text="Whether this media is visible to other users"

@@ -2,13 +2,10 @@ from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Q
-from django.utils import timezone
+from django.db.models import Count
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from feed.models import Place
 
 from .enums import ActivityType
 from .models import Activity, Comment, Follow, Like, Share
